@@ -10,7 +10,7 @@ class World {
         this.stellarData = stellarData ? stellarData : '';
     }
     print() {
-        return `${this.uwp} ${this.bases} ${this.remarks.padEnd(16, " ")} ${this.travelZone}  ${this.pbg} ${this.allegiance} ${this.stellarData}`;
+        return `${this.uwp} ${this.bases}  ${this.remarks.padEnd(16, " ")} ${this.travelZone}  ${this.pbg} ${this.allegiance} ${this.stellarData}`;
     }
 }
 
@@ -62,13 +62,13 @@ function generateUwp() {
     let population = roll() - 2;
     if (size <= 2)
         --population;
-    if (atmosphere >= 10)
+    if (atmosphere >= 10) // exotic, corrosive, insidious, dense/high, ellipsoid, thin/low
         population -= 2;
-    else if (atmosphere == 6)
+    else if (atmosphere == 6) //standard
         population += 3;
-    else if (atmosphere == 5 || atmosphere == 8)
+    else if (atmosphere == 5 || atmosphere == 8) // thin or dense
         ++population;
-    if (hydrographics == 0 && atmosphere < 3)
+    if (hydrographics == 0 && atmosphere < 3) // no water and vacuum, trace, or tainted atmosphere
         population -= 2;
     population = Math.max(0, Math.min(population, 10));
 
@@ -114,6 +114,7 @@ function generateUwp() {
     switch (starport) {
         case 'A':
             technologyLevel += 6;
+            if (lawLevel < 1) lawLevel++;
             break;
         case 'B':
             technologyLevel += 4;
@@ -151,17 +152,23 @@ function generateUwp() {
         case 3:
         case 4:
         case 5:
+        case 7:
+        case 8:
+            ++technologyLevel;
         case 9:
             ++technologyLevel;
             break;
         case 10:
             technologyLevel += 2;
+            if (lawLevel < 1) lawLevel++;
             break;
         case 11:
             technologyLevel += 3;
+            if (lawLevel < 1) lawLevel++;
             break;
         case 12:
             technologyLevel += 4;
+            if (lawLevel < 1) lawLevel++;
             break;
     }
     switch (government) {
@@ -246,17 +253,21 @@ function generateTradeCodes(uwp) {
         tradeCodes.push("Ba");
     if (atmosphere >= 2 && hydrographics == 0)
         tradeCodes.push("De");
+    if (technologyLevel > 0 && population == 0)
+        tradeCodes.push("Di"); // Die-back world
     if (atmosphere >= 10 && hydrographics >= 1)
         tradeCodes.push("Fl");
     if ((atmosphere == 5 || atmosphere == 6 || atmosphere == 8) && hydrographics >= 4 && hydrographics <= 9 && population >= 4 && population <= 8)
         tradeCodes.push("Ga");
+    if ((atmosphere == 2 || atmosphere == 4 || atmosphere == 7 || atmosphere == 9 || atmosphere == 11 || atmosphere == 12) && (population < 9) && (hydrographics < 3)) // tainted, little water, low pop
+        tradeCodes.push("He"); // Hellworld
     if (population >= 9)
         tradeCodes.push("Hi");
     if (technologyLevel >= 12)
         tradeCodes.push("Ht");
     if (atmosphere <= 1 && hydrographics >= 1)
         tradeCodes.push("Ic");
-    if ((atmosphere <= 2 || atmosphere == 4 || atmosphere == 7 || atmosphere == 9) && population >= 9)
+    if ((atmosphere <= 2 || atmosphere == 4 || atmosphere == 7 || atmosphere == 9 || atmosphere == 11 || atmosphere == 12) && population >= 9)
         tradeCodes.push("In");
     if (population >= 1 && population <= 3)
         tradeCodes.push("Lo");
@@ -266,8 +277,14 @@ function generateTradeCodes(uwp) {
         tradeCodes.push("Na");
     if (population >= 4 && population <= 6)
         tradeCodes.push("Ni");
+    if (atmosphere >= 2 && atmosphere <= 5 && hydrographics > 3)
+        tradeCodes.push("Oc");
+    if (population == 8) 
+        tradeCodes.push("Ph");
     if (atmosphere >= 2 && atmosphere <= 5 && hydrographics <= 3)
         tradeCodes.push("Po");
+    else if ((atmosphere >= 2 && atmosphere <= 5) && (hydrographics > 3) && (population <= 6 || population >= 9))
+        tradeCodes.push("Pr");
     else if ((atmosphere == 6 || atmosphere == 8) && population >= 6 && population <= 8)
         tradeCodes.push("Ri");
     if (hydrographics == 10)
@@ -275,7 +292,7 @@ function generateTradeCodes(uwp) {
     if (atmosphere == 0)
         tradeCodes.push("Va");
 
-    return tradeCodes.join(", ");
+    return tradeCodes.join(" ");
 }
 
 function generatePbg(uwp) {
@@ -302,7 +319,7 @@ function generateTravelZone(uwp) {
     let atmosphere = pseudoHex(uwp[2]);
     let government = pseudoHex(uwp[5]);
     let lawLevel = pseudoHex(uwp[6]);
-    let travelZone = ' ';
+    let travelZone = '-';
     if (atmosphere >= 10 || government == 0 || government == 7 || government == 10 || lawLevel == 0 || lawLevel >= 9)
         travelZone = 'A';
 

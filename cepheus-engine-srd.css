@@ -102,3 +102,9 @@ h3::before {
   pointer-events: none;
 }
 
+#sectorImage {
+  text-align: center;
+  padding: 10px;
+  border: thin solid black;
+  margin: 10px;
+}
