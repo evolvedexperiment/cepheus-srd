@@ -137,20 +137,20 @@
 		<script src="world.js"></script>
 		<script src="sectorimage.js"></script>
 		<script>
+			let sectorData = "";
+
 			function init() {
-				let sectorData = "";
 				sectorData = generateSector(document.querySelector('input[name="sectorType"]:checked').value);
 
 				document.getElementById("output").textContent = sectorData;
 				document.getElementById("sectorPopulation").textContent = calculatePopulation(document.getElementById("output").value);
-
-			//TODO: Would be nice to get a map image using the API (https://travellermap.com/doc/api#poster-render-a-sector-quadrant-or-subsector) and display it under the textarea
-				document.getElementById("btnPreview").addEventListener("click", function() { getSectorImage(document.getElementById("sectorImage"), "preview", document.getElementById("sectorImageStyle").value, sectorData); });
-				document.getElementById("btnOpenPNG").addEventListener("click", function() { getSectorImage(null, "png", document.getElementById("sectorImageStyle").value, sectorData); });
-				document.getElementById("btnOpenSVG").addEventListener("click", function() { getSectorImage(null, "svg", document.getElementById("sectorImageStyle").value, sectorData); });
-				document.getElementById("btnOpenPDF").addEventListener("click", function() { getSectorImage(null, "pdf", document.getElementById("sectorImageStyle").value, sectorData); });
 			}
 			init();
+
+			document.getElementById("btnPreview").addEventListener("click", function() { getSectorImage(document.getElementById("sectorImage"), "preview", document.getElementById("sectorImageStyle").value, sectorData); });
+			document.getElementById("btnOpenPNG").addEventListener("click", function() { getSectorImage(null, "png", document.getElementById("sectorImageStyle").value, sectorData); });
+			document.getElementById("btnOpenSVG").addEventListener("click", function() { getSectorImage(null, "svg", document.getElementById("sectorImageStyle").value, sectorData); });
+			document.getElementById("btnOpenPDF").addEventListener("click", function() { getSectorImage(null, "pdf", document.getElementById("sectorImageStyle").value, sectorData); });
 		</script>
 	</main>
 
